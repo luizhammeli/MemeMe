@@ -1,5 +1,5 @@
 //
-//  creatememeviewcontroller-strings.swift
+//  Strings.swift
 //  MemeMe
 //
 //  Created by Luiz Hammerli on 02/02/2018.
