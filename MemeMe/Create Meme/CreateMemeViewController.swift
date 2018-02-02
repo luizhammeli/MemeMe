@@ -47,7 +47,9 @@ class CreateMemeViewController: UIViewController{
         let actViewController = UIActivityViewController(activityItems: [memedImage!], applicationActivities: nil)
         actViewController.popoverPresentationController?.sourceView = self.view
         actViewController.completionWithItemsHandler = {(activity, success, items, error) in
-            self.saveMeme()
+            if(success){
+                self.saveMeme()
+            }
         }
         
         self.present(actViewController, animated: true, completion: nil)
@@ -68,16 +70,9 @@ class CreateMemeViewController: UIViewController{
     }
     
     func setUpViews(){
-        topTextField.delegate = createMemeTextFieldDelegate
-        bottomTextField.delegate = createMemeTextFieldDelegate
+        configureTextField(topTextField)
+        configureTextField(bottomTextField)
         enabledButtons(false)
-        
-        let atrbuttedString: [String: Any] = [NSAttributedStringKey.strokeColor.rawValue: UIColor.black, NSAttributedStringKey.foregroundColor.rawValue: UIColor.white, NSAttributedStringKey.font.rawValue: UIFont(name: Strings.memeTextFontName, size: 40)!, NSAttributedStringKey.strokeWidth.rawValue: -4.5]
-        topTextField.defaultTextAttributes = atrbuttedString
-        topTextField.textAlignment = .center
-        
-        bottomTextField.defaultTextAttributes = atrbuttedString
-        bottomTextField.textAlignment = .center
     }
     
     func subscribeToKeyboardNotifications(){
@@ -142,5 +137,14 @@ class CreateMemeViewController: UIViewController{
     func setTextFieldToDefaultState(){
         topTextField.text = Strings.topTextFieldDefaultText
         bottomTextField.text = Strings.bottomTextFieldDefaultText
+    }
+    
+    func configureTextField(_ textField: UITextField) {
+        textField.delegate = createMemeTextFieldDelegate
+        
+        let atrbuttedString: [String: Any] = [NSAttributedStringKey.strokeColor.rawValue: UIColor.black, NSAttributedStringKey.foregroundColor.rawValue: UIColor.white, NSAttributedStringKey.font.rawValue: UIFont(name: Strings.memeTextFontName, size: 40)!, NSAttributedStringKey.strokeWidth.rawValue: -4.5]
+        
+        textField.defaultTextAttributes = atrbuttedString
+        textField.textAlignment = .center
     }
 }
