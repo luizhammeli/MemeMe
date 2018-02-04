@@ -49,7 +49,6 @@
         <!--Create Meme View Controller-->
         <scene sceneID="mk6-Aq-HPF">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="RDc-VQ-kfw" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="CreateMemeViewControler" id="FmK-4v-jEH" customClass="CreateMemeViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fOT-gb-I4X">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -165,6 +164,7 @@
                         <outlet property="topToolBar" destination="7Cy-Rb-lxd" id="p9D-fI-EvA"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RDc-VQ-kfw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5545" y="-4"/>
         </scene>
