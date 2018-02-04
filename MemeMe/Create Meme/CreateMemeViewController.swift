@@ -22,13 +22,16 @@ class CreateMemeViewController: UIViewController{
     let createMemeTextFieldDelegate = CreateMemeTextFieldDelegate()
     var memedImage: UIImage?
     
+    static let updateTableViewNotificationName =  NSNotification.Name(rawValue: "updateTableView")
+    static let updateCollectionViewNotificationName =  NSNotification.Name(rawValue: "updateCollectionView")
+    
     override var prefersStatusBarHidden: Bool{
         return true
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpViews()
+        setUpViews()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +51,12 @@ class CreateMemeViewController: UIViewController{
         actViewController.popoverPresentationController?.sourceView = self.view
         actViewController.completionWithItemsHandler = {(activity, success, items, error) in
             if(success){
-                self.saveMeme()
+                if let meme = self.saveMeme(){
+                    UIViewController.memesArray.append(meme)
+                    self.dismiss(animated: true, completion: nil)
+                    NotificationCenter.default.post(name: CreateMemeViewController.updateTableViewNotificationName, object: nil)
+                    NotificationCenter.default.post(name: CreateMemeViewController.updateCollectionViewNotificationName, object: nil)
+                }
             }
         }
         
@@ -56,9 +64,7 @@ class CreateMemeViewController: UIViewController{
     }
     
     @IBAction func handleCancelButton(_ sender: Any) {
-        mainImageVIew.image = nil
-        enabledButtons(false)
-        setTextFieldToDefaultState()
+        self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func handleCameraButton(_ sender: Any) {
@@ -70,8 +76,8 @@ class CreateMemeViewController: UIViewController{
     }
     
     func setUpViews(){
-        configureTextField(topTextField)
-        configureTextField(bottomTextField)
+        topTextField.setUpMemeTextAttributes(delegate: createMemeTextFieldDelegate)
+        bottomTextField.setUpMemeTextAttributes(delegate: createMemeTextFieldDelegate)
         enabledButtons(false)
     }
     
@@ -83,11 +89,12 @@ class CreateMemeViewController: UIViewController{
     
     func unsubscribeFromKeyboardNotifications() {
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
     }
     
     @objc func keyboardWillShow(_ notification:Notification){
         if(bottomTextField.isFirstResponder){
-            self.view.frame = CGRect(x: 0, y: -getKeyboardHeight(notification), width: self.view.frame.width, height: self.view.frame.height)
+            view.frame.origin.y = -getKeyboardHeight(notification)
         }
     }
     
@@ -98,17 +105,19 @@ class CreateMemeViewController: UIViewController{
     }
     
     @objc func keyboardWillHide(){
-        self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        view.frame.origin.y = 0
     }
     
     func generateMemedImage() -> UIImage {
         showToolBars(true)
+        self.view.backgroundColor = .white
         
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
+        self.view.backgroundColor = UIColor.darkGray
         showToolBars(false)
         
         return memedImage
@@ -120,7 +129,7 @@ class CreateMemeViewController: UIViewController{
     }
     
     func enabledButtons(_ willHide: Bool){
-        cancelButton.isEnabled = willHide
+        cancelButton.isEnabled = true        
         actionButton.isEnabled = willHide
     }
     
@@ -128,23 +137,13 @@ class CreateMemeViewController: UIViewController{
         self.view.endEditing(true)
     }
     
-    func saveMeme() {
-        guard let memedImage = memedImage, let topText =  topTextField.text, let bottomText = bottomTextField.text, let originalImage = mainImageVIew.image else{return}
-        
-        let meme = Meme(topText: topText, bottomText: bottomText, originalImage: originalImage, memedImage: memedImage)
+    func saveMeme() -> Meme?{
+        guard let memedImage = memedImage, let topText =  topTextField.text, let bottomText = bottomTextField.text, let originalImage = mainImageVIew.image else{return nil}
+        return Meme(topText: topText, bottomText: bottomText, originalImage: originalImage, memedImage: memedImage)
     }
     
     func setTextFieldToDefaultState(){
         topTextField.text = Strings.topTextFieldDefaultText
         bottomTextField.text = Strings.bottomTextFieldDefaultText
-    }
-    
-    func configureTextField(_ textField: UITextField) {
-        textField.delegate = createMemeTextFieldDelegate
-        
-        let atrbuttedString: [String: Any] = [NSAttributedStringKey.strokeColor.rawValue: UIColor.black, NSAttributedStringKey.foregroundColor.rawValue: UIColor.white, NSAttributedStringKey.font.rawValue: UIFont(name: Strings.memeTextFontName, size: 40)!, NSAttributedStringKey.strokeWidth.rawValue: -4.5]
-        
-        textField.defaultTextAttributes = atrbuttedString
-        textField.textAlignment = .center
     }
 }
