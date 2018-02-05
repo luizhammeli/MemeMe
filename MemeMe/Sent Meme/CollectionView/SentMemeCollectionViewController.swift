@@ -29,14 +29,16 @@ class SentMemeCollectionViewController: UICollectionViewController, UICollection
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft ||  UIDevice.current.orientation == UIDeviceOrientation.landscapeRight){
-            return CGSize(width: self.view.frame.width/5-8, height: self.view.frame.width/5-4)
+            let landscapeOrientationSize = (self.view.frame.width/5)-4
+            return CGSize(width: landscapeOrientationSize, height: landscapeOrientationSize)
         }
         
-        return CGSize(width: self.view.frame.width/3-4, height: self.view.frame.width/3-2)
+        let portraitOrientationSize = (self.view.frame.width/3)-2
+        return CGSize(width: portraitOrientationSize, height: portraitOrientationSize)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 2
+        return 1
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
